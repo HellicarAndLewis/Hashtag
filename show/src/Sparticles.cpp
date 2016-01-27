@@ -39,6 +39,8 @@ Sparticles::Sparticles(){
     numParticles = 1000;
     positions = new ofVec2f[numParticles];
     velocities = new ofVec2f[numParticles];
+    rotations = new float[numParticles];
+    rotationSpeeds = new float[numParticles];
     ages = new int[numParticles];
     sizes = new float[numParticles];
     
@@ -47,15 +49,17 @@ Sparticles::Sparticles(){
         velocities[i] = ofVec2f(0, 0);
         ages[i] = maxAge;
         sizes[i] = ofRandom(5, 26);
+        rotations[i] = ofRandom(0, 360);
+        rotationSpeeds[i] = ofRandom(-5, 5);
     }
     
     int i = 0;
-    colors[i++] = 0xCBCEE1;
-    colors[i++] = 0xDCC8CC;
-    colors[i++] = 0xEDB451;
-    colors[i++] = 0xACC5D6;
-    colors[i++] = 0xB6D597;
-    colors[i++] = 0xE0CACB;
+    colors[i++] = 0xFFFFFF;
+    colors[i++] = 0xFFFFFF;
+    colors[i++] = 0xFFFFFF;
+    colors[i++] = 0xFFFFFF;
+    colors[i++] = 0xFFFFFF;
+    colors[i++] = 0xFFFFFF;
     
     categoryIndex = 0;
     
@@ -85,6 +89,9 @@ void Sparticles::setup() {
     ofxNestedFileLoader loader;
     loader.findNestedFilePaths("textures");
     vector<string> names = loader.getPaths();
+    for(int i = 0; i < names.size(); i++) {
+        cout<<names[i]<<endl;
+    }
     vector<ofImage> categoryImages;
     string lastCategory = "";
     string currentCategory = "";
@@ -99,6 +106,9 @@ void Sparticles::setup() {
         ofImage img;
         img.load(names[i]);
         categoryImages.push_back(img);
+        if(i == names.size()-1) {
+            imageLibrary.push_back(categoryImages);
+        }
     }
     
     images = &(imageLibrary[categoryIndex]);
@@ -117,6 +127,7 @@ void Sparticles::update(){
     for(int i = 0; i < numParticles; i++) {
         ages[i]++;
         positions[i] += velocities[i];
+        rotations[i] += rotationSpeeds[i];
     }
 }
 
@@ -129,7 +140,7 @@ void Sparticles::draw(bool multicoloured){
     //}
     //    images[0].draw(500, 500);
     ofEnableAlphaBlending();
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+    //glBlendFunc(GL_SRC_ALPHA,GL_ONE);
     for(int i = 0; i < numParticles; i++) {
         if(ages[i]<maxAge) {
             float size = ofMap(ages[i], 0, maxAge, sizes[i], 0);
@@ -144,15 +155,19 @@ void Sparticles::draw(bool multicoloured){
             //if(colorIndex==20) {
             c.setHex(colors[i%6]);
             //}
-            ofSetColor(c.r, c.g, c.b, ofMap(ages[i], 0, maxAge, 255, 0) );
+            ofSetColor(c.r, c.g, c.b);//ofMap(ages[i], 0, maxAge, 255, 0) );
             ofRotate(180, 0, 1, 0);
+            ofPushMatrix();
+            ofTranslate(positions[i].x, positions[i].y);
+            ofRotate(rotations[i], 0, 0, 1);
             //            ofCircle(positions[i].x - size/2, positions[i].y - size/2, size);
             if(ofRandom(0, 1)>0.90) {
                 int r = 1+rand()%(images->size()-1);
-                (*images)[r].draw(positions[i].x, positions[i].y, size, size);
+                (*images)[r].draw(0, 0, size, size);
             } else {
-                (*images)[0].draw(positions[i].x, positions[i].y, size, size);
+                (*images)[0].draw(0, 0, size, size);
             }
+            ofPopMatrix();
             //            ofRect(positions[i].x - size/2, positions[i].y - size/2, size, size);
         }
     }

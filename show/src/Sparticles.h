@@ -60,6 +60,8 @@ private:
     
     ofVec2f *positions;
     ofVec2f *velocities;
+    float *rotations;
+    float *rotationSpeeds;
     float *sizes;
     int *ages;
     vector<ofImage>* images;
