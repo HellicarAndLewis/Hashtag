@@ -36,7 +36,7 @@ Sparticles::Sparticles(){
     
     pos = 0;
     maxAge = 50;
-    numParticles = 1000;
+    numParticles = 5000;
     positions = new ofVec2f[numParticles];
     velocities = new ofVec2f[numParticles];
     rotations = new float[numParticles];
@@ -48,7 +48,7 @@ Sparticles::Sparticles(){
         positions[i] = ofVec2f(-10, -10);
         velocities[i] = ofVec2f(0, 0);
         ages[i] = maxAge;
-        sizes[i] = ofRandom(5, 26);
+        sizes[i] = ofRandom(10, 52);
         rotations[i] = ofRandom(0, 360);
         rotationSpeeds[i] = ofRandom(-5, 5);
     }
@@ -155,18 +155,13 @@ void Sparticles::draw(bool multicoloured){
             //if(colorIndex==20) {
             c.setHex(colors[i%6]);
             //}
-            ofSetColor(c.r, c.g, c.b);//ofMap(ages[i], 0, maxAge, 255, 0) );
+            ofSetColor(c.r, c.g, c.b, ofMap(ages[i], 0.5, maxAge, 255, 0) );
             ofRotate(180, 0, 1, 0);
             ofPushMatrix();
             ofTranslate(positions[i].x, positions[i].y);
             ofRotate(rotations[i], 0, 0, 1);
             //            ofCircle(positions[i].x - size/2, positions[i].y - size/2, size);
-            if(ofRandom(0, 1)>0.90) {
-                int r = 1+rand()%(images->size()-1);
-                (*images)[r].draw(0, 0, size, size);
-            } else {
-                (*images)[0].draw(0, 0, size, size);
-            }
+            (*images)[0].draw(0, 0, size, size);
             ofPopMatrix();
             //            ofRect(positions[i].x - size/2, positions[i].y - size/2, size, size);
         }
