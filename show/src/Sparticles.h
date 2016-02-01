@@ -42,6 +42,12 @@ public:
     void draw(bool multicoloured = true);
     void spawn(float x, float y, float dx, float dy);
     void goToNextParticleSet();
+    void setCategoryIndex(int index) {
+        categoryIndex = index;
+        categoryIndex %= imageLibrary.size();
+        images = &(imageLibrary[categoryIndex]);
+    };
+    
     
     
     Sparticles();

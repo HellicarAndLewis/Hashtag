@@ -59,9 +59,39 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    if(key == ' ') {
-        particles.goToNextParticleSet();
+    switch (key) {
+        case '1':
+            particles.setCategoryIndex(0);
+            break;
+        case '2':
+            particles.setCategoryIndex(1);
+            break;
+        case '3':
+            particles.setCategoryIndex(2);
+            break;
+        case '4':
+            particles.setCategoryIndex(3);
+            break;
+        case '5':
+            particles.setCategoryIndex(4);
+            break;
+        case '6':
+            particles.setCategoryIndex(5);
+            break;
+        case '7':
+            particles.setCategoryIndex(6);
+            break;
+        case ' ':
+            particles.goToNextParticleSet();
+            break;
+        default:
+            break;
     }
+//    if(key == ' ') {
+//        particles.goToNextParticleSet();
+//    } else if(key == '1') {
+//        particles.setCategoryIndex(1);
+//    }
 }
 
 //--------------------------------------------------------------
