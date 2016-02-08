@@ -30,6 +30,7 @@ class ofApp : public ofBaseApp{
     ofVideoGrabber camera;
     
     ofxCvColorImage			scaledImage;
+    ofxCvColorImage         scaledImageFlipped;
     ofxCvGrayscaleImage 	grayImage;
     ofxCvGrayscaleImage 	grayBg;
     ofxCvGrayscaleImage 	grayDiff;

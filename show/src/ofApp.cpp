@@ -7,6 +7,7 @@
 void ofApp::setup(){
     camera.initGrabber(VID_WIDTH, VID_HEIGHT);
     scaledImage.allocate(VID_WIDTH, VID_HEIGHT);
+    scaledImageFlipped.allocate(VID_WIDTH, VID_HEIGHT);
     grayImage.allocate(VID_WIDTH, VID_HEIGHT);
     grayBg.allocate(VID_WIDTH, VID_HEIGHT);
     grayDiff.allocate(VID_WIDTH, VID_HEIGHT);
@@ -51,7 +52,9 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofPushMatrix();
+        ofTranslate(ofGetWidth(), 0);
         ofScale(ofGetWidth()/VID_WIDTH, ofGetHeight()/VID_HEIGHT);
+        ofScale(-1, 1);
         camera.draw(0, 0);
         particles.draw();
     ofPopMatrix();
@@ -87,11 +90,6 @@ void ofApp::keyPressed(int key){
         default:
             break;
     }
-//    if(key == ' ') {
-//        particles.goToNextParticleSet();
-//    } else if(key == '1') {
-//        particles.setCategoryIndex(1);
-//    }
 }
 
 //--------------------------------------------------------------
