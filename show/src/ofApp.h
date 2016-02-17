@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxGui.h"
+#include "ofxDatGui.h"
 #include "ofxOpenCv.h"
-#include "ofxCv.h"
 #include "Sparticles.h"
 
 class ofApp : public ofBaseApp{
@@ -25,14 +24,27 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
+        void onToggleEvent(ofxDatGuiButtonEvent e);
+        void onMatrixEvent(ofxDatGuiMatrixEvent e);
+    
     Sparticles particles;
     ofxCvContourFinder contourFinder;
     ofVideoGrabber camera;
+    
+    bool    drawCamera,
+            drawSparkles,
+            drawBackground,
+            clearBackground;
+    
+    ofxDatGui *gui;
+    
+    vector<ofImage*>* images;
+    
+    ofFbo buffer;
     
     ofxCvColorImage			scaledImage;
     ofxCvColorImage         scaledImageFlipped;
     ofxCvGrayscaleImage 	grayImage;
     ofxCvGrayscaleImage 	grayBg;
     ofxCvGrayscaleImage 	grayDiff;
-		
 };

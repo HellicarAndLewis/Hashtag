@@ -48,8 +48,6 @@ public:
         images = &(imageLibrary[categoryIndex]);
     };
     
-    
-    
     Sparticles();
     ~Sparticles();
     

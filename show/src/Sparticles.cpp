@@ -35,7 +35,7 @@
 Sparticles::Sparticles(){
     
     pos = 0;
-    maxAge = 50;
+    maxAge = 100;
     numParticles = 5000;
     positions = new ofVec2f[numParticles];
     velocities = new ofVec2f[numParticles];
@@ -87,11 +87,9 @@ Sparticles::Sparticles(){
 void Sparticles::setup() {
     
     ofxNestedFileLoader loader;
-    loader.findNestedFilePaths("textures");
+    loader.findNestedFilePaths("sparkles");
     vector<string> names = loader.getPaths();
-    for(int i = 0; i < names.size(); i++) {
-        cout<<names[i]<<endl;
-    }
+    loader.printPaths();
     vector<ofImage> categoryImages;
     string lastCategory = "";
     string currentCategory = "";
@@ -110,7 +108,6 @@ void Sparticles::setup() {
             imageLibrary.push_back(categoryImages);
         }
     }
-    
     images = &(imageLibrary[categoryIndex]);
 }
 
@@ -156,10 +153,10 @@ void Sparticles::draw(bool multicoloured){
             c.setHex(colors[i%6]);
             //}
             ofSetColor(c.r, c.g, c.b, ofMap(ages[i], 0.5, maxAge, 255, 0) );
-            ofRotate(180, 0, 1, 0);
+//            ofRotate(180, 0, 1, 0);
             ofPushMatrix();
             ofTranslate(positions[i].x, positions[i].y);
-            ofRotate(rotations[i], 0, 0, 1);
+//            ofRotate(rotations[i], 0, 0, 1);
             //            ofCircle(positions[i].x - size/2, positions[i].y - size/2, size);
             (*images)[0].draw(0, 0, size, size);
             ofPopMatrix();

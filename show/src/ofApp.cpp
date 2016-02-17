@@ -5,21 +5,64 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
     camera.initGrabber(VID_WIDTH, VID_HEIGHT);
     scaledImage.allocate(VID_WIDTH, VID_HEIGHT);
     scaledImageFlipped.allocate(VID_WIDTH, VID_HEIGHT);
     grayImage.allocate(VID_WIDTH, VID_HEIGHT);
     grayBg.allocate(VID_WIDTH, VID_HEIGHT);
     grayDiff.allocate(VID_WIDTH, VID_HEIGHT);
+    
     particles.setup();
-    cout<<ofGetWidth()<<endl;
-    cout<<ofGetHeight()<<endl;
+    
+    buffer.allocate(ofGetWidth() - ofGetScreenWidth(), ofGetHeight());
+    
+    images = new vector<ofImage*>();
+    
+    ofxNestedFileLoader loader;
+    loader.findNestedFilePaths("backgrounds");
+    vector<string> backgroundNames = loader.getPaths();
+    for(int i = 0; i < backgroundNames.size(); i++) {
+        ofImage *img;
+        img = new ofImage();
+        img->load(backgroundNames[i]);
+        images->push_back(img);
+    }
+        
+    ofBackground(0);
+    
+    vector<int> selected;
+    selected.push_back(0);
+    
+    gui = new ofxDatGui(ofxDatGuiAnchor::TOP_LEFT);
+    gui->addFRM();
+    auto toggle = gui->addToggle("SPARKLES", true);
+    toggle->onButtonEvent(this, &ofApp::onToggleEvent);
+    toggle = gui->addToggle("BACKGROUND", true);
+    toggle->onButtonEvent(this, &ofApp::onToggleEvent);
+    toggle = gui->addToggle("CAMERA", true);
+    toggle->onButtonEvent(this, &ofApp::onToggleEvent);
+    toggle = gui->addToggle("TRAILS", false);
+    toggle->onButtonEvent(this, &ofApp::onToggleEvent);
+    auto matrix = gui->addMatrix("SOCIAL MEDIA", 7, true);
+    matrix->setSelected(selected);
+    matrix->setRadioMode(true);
+    
+    gui->setVisible(true);
+    
+    ofSetColor(255);
+    
+    drawCamera = true;
+    drawSparkles = true;
+    drawBackground = true;
+    clearBackground = true;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     camera.update();
     scaledImage.setFromPixels(camera.getPixels(), camera.getWidth(), camera.getHeight());
+    scaledImage.mirror(false, true);
     grayImage = scaledImage;
     
     // take the abs value of the difference between background and incoming and then threshold:
@@ -30,6 +73,7 @@ void ofApp::update(){
     // also, find holes is set to true so we will get interior contours as well....
     contourFinder.findContours(grayDiff, 20, (camera.getWidth()*camera.getHeight())/3, 10, true);	// find holes
     
+    particles.setCategoryIndex(gui->getMatrix("SOCIAL MEDIA")->getSelected()[0]);
     // now just stick some particles on the contour and emit them randomly
     for(int i = 0; i < contourFinder.nBlobs; i++) {
         int step = 10;//contourFinder.blobs[i].pts.size()/10;
@@ -52,44 +96,51 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofPushMatrix();
-        ofTranslate(ofGetWidth(), 0);
-        ofScale(ofGetWidth()/VID_WIDTH, ofGetHeight()/VID_HEIGHT);
-        ofScale(-1, 1);
-        camera.draw(0, 0);
-        particles.draw();
+    buffer.begin();
+        if(clearBackground) ofClear(0);
+        if(drawBackground) {
+            ofImage* bg = (*images)[gui->getMatrix("SOCIAL MEDIA")->getSelected()[0]];
+            bg->draw(buffer.getWidth()/2 - bg->getWidth()/2, buffer.getHeight()/2 - bg->getHeight()/2);
+        }
+        ofScale(buffer.getWidth()/VID_WIDTH, buffer.getHeight()/VID_HEIGHT);
+        if(drawCamera) scaledImage.draw(0, 0);
+        if(drawSparkles) particles.draw();
+    buffer.end();
+    ofPopMatrix();
+    gui->draw();
+    ofPushMatrix();
+        ofTranslate(ofGetScreenWidth(), 0);
+        buffer.draw(0, 0);
+    ofPopMatrix();
+    ofPushMatrix();
+        ofTranslate(ofGetScreenWidth()/2 - VID_WIDTH/2, ofGetScreenHeight()/2 - VID_HEIGHT/2);
+        buffer.draw(0, 0, VID_WIDTH, VID_HEIGHT);
+        ofNoFill();
+        ofDrawRectangle(0, 0, VID_WIDTH, VID_HEIGHT);
     ofPopMatrix();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    switch (key) {
-        case '1':
-            particles.setCategoryIndex(0);
-            break;
-        case '2':
-            particles.setCategoryIndex(1);
-            break;
-        case '3':
-            particles.setCategoryIndex(2);
-            break;
-        case '4':
-            particles.setCategoryIndex(3);
-            break;
-        case '5':
-            particles.setCategoryIndex(4);
-            break;
-        case '6':
-            particles.setCategoryIndex(5);
-            break;
-        case '7':
-            particles.setCategoryIndex(6);
-            break;
-        case ' ':
-            particles.goToNextParticleSet();
-            break;
-        default:
-            break;
+
+}
+
+//--------------------------------------------------------------
+void ofApp::onToggleEvent(ofxDatGuiButtonEvent e) {
+    if(e.target->getLabel() == "CAMERA") {
+        drawCamera = e.target->getEnabled();
+    } else if(e.target->getLabel() == "SPARKLES") {
+        drawSparkles = e.target->getEnabled();
+    } else if(e.target->getLabel() == "BACKGROUND") {
+        drawBackground = e.target->getEnabled();
+    } else if(e.target->getLabel() == "TRAILS") {
+        clearBackground = !e.target->getEnabled();
     }
+}
+
+//--------------------------------------------------------------
+void ofApp::onMatrixEvent(ofxDatGuiMatrixEvent e) {
+    
 }
 
 //--------------------------------------------------------------
