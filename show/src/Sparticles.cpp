@@ -28,9 +28,6 @@
 
 
 #include "Sparticles.h"
-//#include "Settings.h"
-
-//#include "ColorPicker.h"
 
 Sparticles::Sparticles(){
     
@@ -62,26 +59,6 @@ Sparticles::Sparticles(){
     colors[i++] = 0xFFFFFF;
     
     categoryIndex = 0;
-    
-    //    colors[i++] = 0x0E2356;
-    //    colors[i++] = 0x74AF27;
-    //    colors[i++] = 0xFFEC00;
-    //    colors[i++] = 0xED6B06;
-    //    colors[i++] = 0x6D1B00;
-    //    colors[i++] = 0xA80F79;
-    //    colors[i++] = 0xE7378C;
-    //    colors[i++] = 0x0070BA;
-    //    colors[i++] = 0xC0D886;
-    //    colors[i++] = 0xF0E500;
-    //    colors[i++] = 0xF0856A;
-    //    colors[i++] = 0xE42313;
-    //    colors[i++] = 0xF1DCED;
-    //    colors[i++] = 0xF6B6CB;
-    //    colors[i++] = 0xBDE3F2;
-    //    colors[i++] = 0xF9F3B2;
-    //    colors[i++] = 0xFFFADE;
-    //    colors[i++] = 0xF8E7E2;
-    //    colors[i++] = 0;
 }
 
 void Sparticles::setup() {
@@ -130,37 +107,17 @@ void Sparticles::update(){
 
 void Sparticles::draw(bool multicoloured){
     ofPushStyle();
-    //int colorIndex = Settings::getInstance()->settings["fgColor"];
     ofColor c;
-    //if(colorIndex!=20) {
-    //c = ofColor::fromHex(colors[colorIndex]);
-    //}
-    //    images[0].draw(500, 500);
     ofEnableAlphaBlending();
-    //glBlendFunc(GL_SRC_ALPHA,GL_ONE);
     for(int i = 0; i < numParticles; i++) {
         if(ages[i]<maxAge) {
             float size = ofMap(ages[i], 0, maxAge, sizes[i], 0);
-            
-            //            if (particleDisplayMode == 2){
-            //                        ofTranslate(1, 1, -size);
-            //            }
-            //            else {
-            //                         ofTranslate(1, 1, 1);
-            //            }
-            //ofTranslate(1, 1, ages[i]/10); ///moves them in 3D
-            //if(colorIndex==20) {
             c.setHex(colors[i%6]);
-            //}
             ofSetColor(c.r, c.g, c.b, ofMap(ages[i], 0.5, maxAge, 255, 0) );
-//            ofRotate(180, 0, 1, 0);
             ofPushMatrix();
             ofTranslate(positions[i].x, positions[i].y);
-//            ofRotate(rotations[i], 0, 0, 1);
-            //            ofCircle(positions[i].x - size/2, positions[i].y - size/2, size);
             (*images)[0].draw(0, 0, size, size);
             ofPopMatrix();
-            //            ofRect(positions[i].x - size/2, positions[i].y - size/2, size, size);
         }
     }
     ofPopStyle();

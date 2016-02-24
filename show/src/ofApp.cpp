@@ -1,7 +1,13 @@
 #include "ofApp.h"
 
-#define VID_WIDTH 1280.0f
-#define VID_HEIGHT 720.0f
+#define VID_WIDTH 640.0f
+#define VID_HEIGHT 360.0f
+
+#define PREVIEW_WIDTH 1280.0f
+#define PREVIEW_HEIGHT 720.0f
+
+#define OUT_WIDTH 1920.0f
+#define OUT_HEIGHT 1080.0f
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -15,7 +21,12 @@ void ofApp::setup(){
     
     particles.setup();
     
-    buffer.allocate(ofGetWidth() - ofGetScreenWidth(), ofGetHeight());
+    float fullWidth = ofGetWidth();
+    float fullHeight = ofGetHeight();
+    float screenWidth = ofGetScreenWidth();
+    float outputWidth = fullWidth;
+
+    buffer.allocate(OUT_WIDTH, OUT_HEIGHT);
     
     images = new vector<ofImage*>();
     
@@ -44,7 +55,7 @@ void ofApp::setup(){
     toggle->onButtonEvent(this, &ofApp::onToggleEvent);
     toggle = gui->addToggle("TRAILS", false);
     toggle->onButtonEvent(this, &ofApp::onToggleEvent);
-    auto matrix = gui->addMatrix("SOCIAL MEDIA", 7, true);
+    auto matrix = gui->addMatrix("SOCIAL MEDIA", backgroundNames.size(), true);
     matrix->setSelected(selected);
     matrix->setRadioMode(true);
     
@@ -113,10 +124,10 @@ void ofApp::draw(){
         buffer.draw(0, 0);
     ofPopMatrix();
     ofPushMatrix();
-        ofTranslate(ofGetScreenWidth()/2 - VID_WIDTH/2, ofGetScreenHeight()/2 - VID_HEIGHT/2);
-        buffer.draw(0, 0, VID_WIDTH, VID_HEIGHT);
+        ofTranslate(ofGetScreenWidth()/2 - PREVIEW_WIDTH/2, ofGetScreenHeight()/2 - PREVIEW_HEIGHT/2);
+        buffer.draw(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
         ofNoFill();
-        ofDrawRectangle(0, 0, VID_WIDTH, VID_HEIGHT);
+        ofDrawRectangle(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
     ofPopMatrix();
 }
 
