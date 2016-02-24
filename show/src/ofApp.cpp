@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
-#define VID_WIDTH 640.0f
-#define VID_HEIGHT 360.0f
+#define VID_WIDTH 1280.0f//640.0f
+#define VID_HEIGHT 720.0f //360.0f
 
 #define PREVIEW_WIDTH 1280.0f
 #define PREVIEW_HEIGHT 720.0f
@@ -58,6 +58,8 @@ void ofApp::setup(){
     auto matrix = gui->addMatrix("SOCIAL MEDIA", backgroundNames.size(), true);
     matrix->setSelected(selected);
     matrix->setRadioMode(true);
+    auto slider = gui->addSlider("RESOLUTION", 0.1, 1.0, 1.0);
+    slider->onSliderEvent(this, &ofApp::onSliderEvent);
     
     gui->setVisible(true);
     
@@ -72,7 +74,9 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     camera.update();
+    float dimFac = gui->getSlider("RESOLUTION")->getValue();
     scaledImage.setFromPixels(camera.getPixels(), camera.getWidth(), camera.getHeight());
+    scaledImage.resize(VID_WIDTH*dimFac, VID_HEIGHT*dimFac);
     scaledImage.mirror(false, true);
     grayImage = scaledImage;
     
@@ -82,17 +86,18 @@ void ofApp::update(){
     
     // find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
     // also, find holes is set to true so we will get interior contours as well....
-    contourFinder.findContours(grayDiff, 20, (camera.getWidth()*camera.getHeight())/3, 10, true);	// find holes
+    contourFinder.findContours(grayDiff, 20, (scaledImage.getWidth()*scaledImage.getHeight())/3, 10, true);	// find holes
     
     particles.setCategoryIndex(gui->getMatrix("SOCIAL MEDIA")->getSelected()[0]);
+    
     // now just stick some particles on the contour and emit them randomly
     for(int i = 0; i < contourFinder.nBlobs; i++) {
-        int step = 10;//contourFinder.blobs[i].pts.size()/10;
+        int step = 10*dimFac;//contourFinder.blobs[i].pts.size()/10;
         for(int j = 0; j < contourFinder.blobs[i].pts.size(); j+=step) {
             particles.spawn(
                             contourFinder.blobs[i].pts[j].x,//*WIDTH/VISION_WIDTH,
                             contourFinder.blobs[i].pts[j].y,//*HEIGHT/VISION_HEIGHT,
-                            ofRandom(-5, 5), ofRandom(-5, 5));
+                            ofRandom(-5, 5)*dimFac, ofRandom(-5, 5)*dimFac);
         }
     }
     
@@ -113,9 +118,11 @@ void ofApp::draw(){
             ofImage* bg = (*images)[gui->getMatrix("SOCIAL MEDIA")->getSelected()[0]];
             bg->draw(buffer.getWidth()/2 - bg->getWidth()/2, buffer.getHeight()/2 - bg->getHeight()/2);
         }
-        ofScale(buffer.getWidth()/VID_WIDTH, buffer.getHeight()/VID_HEIGHT);
+        ofScale(buffer.getWidth()/scaledImage.getWidth(), buffer.getHeight()/scaledImage.getHeight());
         if(drawCamera) scaledImage.draw(0, 0);
-        if(drawSparkles) particles.draw();
+        if(drawSparkles) {
+                particles.draw(gui->getSlider("RESOLUTION")->getValue(), gui->getSlider("RESOLUTION")->getValue());
+        }
     buffer.end();
     ofPopMatrix();
     gui->draw();
@@ -129,11 +136,6 @@ void ofApp::draw(){
         ofNoFill();
         ofDrawRectangle(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
     ofPopMatrix();
-}
-
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-
 }
 
 //--------------------------------------------------------------
@@ -155,51 +157,11 @@ void ofApp::onMatrixEvent(ofxDatGuiMatrixEvent e) {
 }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
+void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
+    scaledImage.allocate(VID_WIDTH* e.target->getValue(), VID_HEIGHT * e.target->getValue());
+    scaledImageFlipped.allocate(VID_WIDTH* e.target->getValue(), VID_HEIGHT* e.target->getValue());
+    grayImage.allocate(VID_WIDTH* e.target->getValue(), VID_HEIGHT* e.target->getValue());
+    grayBg.allocate(VID_WIDTH* e.target->getValue(), VID_HEIGHT* e.target->getValue());
+    grayDiff.allocate(VID_WIDTH* e.target->getValue(), VID_HEIGHT* e.target->getValue());
 }
 
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
-}

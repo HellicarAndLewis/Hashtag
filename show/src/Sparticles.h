@@ -39,7 +39,7 @@ public:
     
     void setup();
     void update();
-    void draw(bool multicoloured = true);
+    void draw(float xFactor, float yFactor);
     void spawn(float x, float y, float dx, float dy);
     void goToNextParticleSet();
     void setCategoryIndex(int index) {
@@ -47,6 +47,7 @@ public:
         categoryIndex %= imageLibrary.size();
         images = &(imageLibrary[categoryIndex]);
     };
+    ofVec2f* getVelocities() { return velocities; };
     
     Sparticles();
     ~Sparticles();

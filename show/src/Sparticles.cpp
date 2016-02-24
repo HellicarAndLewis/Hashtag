@@ -105,7 +105,7 @@ void Sparticles::update(){
     }
 }
 
-void Sparticles::draw(bool multicoloured){
+void Sparticles::draw(float xFactor, float yFactor){
     ofPushStyle();
     ofColor c;
     ofEnableAlphaBlending();
@@ -116,6 +116,7 @@ void Sparticles::draw(bool multicoloured){
             ofSetColor(c.r, c.g, c.b, ofMap(ages[i], 0.5, maxAge, 255, 0) );
             ofPushMatrix();
             ofTranslate(positions[i].x, positions[i].y);
+            ofScale(xFactor, yFactor);
             (*images)[0].draw(0, 0, size, size);
             ofPopMatrix();
         }
